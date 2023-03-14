@@ -23,7 +23,8 @@ class YouTrack:
 
 
 class Issue(dict):
-    def __init__(self, issue: dict):
+    def __init__(self, ticket, issue: dict):
+        self.ticket = ticket
         ITEMS_TO_KEEP = [
             "idReadable",
             "summary",
@@ -40,6 +41,18 @@ class Issue(dict):
         if len(filtered_dict["description"]) > 1024:
             filtered_dict["description"] = filtered_dict["description"][:1024] + "..."
         super().__init__(filtered_dict)
+
+    def print_table(self):
+        table = Table(title=f"Issue data for {self.ticket}")
+
+        table.add_column("Key", justify="right", style="cyan", no_wrap=True)
+        table.add_column("Value", style="magenta")
+        for k, v in self.items():
+            table.add_row(k, v)
+            table.add_section()
+
+        console = Console()
+        console.print(table)
 
 
 @dataclasses.dataclass
@@ -80,43 +93,49 @@ def cli(ctx, verbose, url, token):
 
 @cli.command()
 @click.option("--ticket", help="Ticket id, of the form PROJECT-1234", required=True)
+@click.option(
+    "--confirm-prompt",
+    help="Prompt the user to type in the issue, can be used as part of a git pre-push script for confirming issue",
+    is_flag=True,
+)
 @click.pass_context
-def get(ctx: CliCtx, ticket):
+def get(ctx: CliCtx, ticket, confirm_prompt):
     if not re.match(r"^[A-Za-z]+-\d+$", ticket):
         raise click.BadParameter("ticket must be of the form PROJECT-1234")
 
+    # issue api request
     ticket_response: Response = get_issues_id.sync_detailed(
         id=ticket, client=ctx.obj.youtrack.client
     )
 
+    # check for response error
     if ticket_response.status_code != HTTPStatus.OK:
         raise RuntimeError(f"unexpected status code: {ticket_response.status_code}")
 
-    issue_json = json.loads(ticket_response.content.decode("utf-8"))
+    # parse json
+    response_text = ticket_response.content.decode("utf-8")
+    if ctx.obj.verbose:
+        print_json(response_text)
+    issue_json = json.loads(response_text)
+
+    # inject some additional fields that the Issue() class uses
+    # 1. ticket URL
     issue_json[
         "url"
     ] = f"{ctx.obj.url.removesuffix('/api')}/issue/{issue_json['idReadable']}"
+    # 2. reporter name
     issue_json["reporter_name"] = issue_json["reporter"]["login"]
-
+    # 3. assignee name, if present
     for field in issue_json["customFields"]:
         if field["name"] == "Assignee":
             issue_json["assignee_name"] = field["value"]["name"]
 
-    issue = Issue(issue_json)
+    issue = Issue(ticket, issue_json)
+    issue.print_table()
 
-    table = Table(title=f"Issue data for {ticket}")
-
-    table.add_column("Key", justify="right", style="cyan", no_wrap=True)
-    table.add_column("Value", style="magenta")
-    for k, v in issue.items():
-        table.add_row(k, v)
-        table.add_section()
-
-    if ctx.obj.verbose:
-        print_json(ticket_response.content.decode("utf-8"))
-
-    console = Console()
-    console.print(table)
+    if confirm_prompt:
+        while click.prompt("Type the ticket id to confirm").lower() != ticket.lower():
+            print("Ticket id did not match, try again!")
 
 
 if __name__ == "__main__":

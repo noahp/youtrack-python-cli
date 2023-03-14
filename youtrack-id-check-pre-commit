@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# In theory this could be used as a pre-commit hook, but pre-commit doesn't let
+# you use stdin, so the user-interactive mode of the script doesn't work 😢
+
+# https://pre-commit.com/#pre-commit-during-push
+# PRE_COMMIT_FROM_REF: the remote revision that is being pushed to.
+#     new in 2.2.0 prior to 2.2.0 the variable was PRE_COMMIT_SOURCE.
+# PRE_COMMIT_TO_REF: the local revision that is being pushed to the remote.
+#     new in 2.2.0 prior to 2.2.0 the variable was PRE_COMMIT_ORIGIN.
+
+range="${PRE_COMMIT_FROM_REF-${PRE_COMMIT_SOURCE}}..${PRE_COMMIT_TO_REF-${PRE_COMMIT_ORIGIN}}"
+ticket=$(git --no-pager log --pretty="%s" --extended-regexp --grep '^[A-Za-z]+-[0-9]+' -n 1 "$range" | grep -E --only-matching '^[A-Za-z]+-[0-9]+')
+if test -n "$ticket"; then
+    # pass stdin to the script, so the prompt is interactive
+    youtrack-cli get --confirm-prompt --ticket "$ticket" </dev/tty
+fi

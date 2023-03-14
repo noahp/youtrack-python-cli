@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# Sample .git/hooks/pre-push script that invokes the youtrack-cli ticket check
+# when pushing a new branch.
+#
+# If you're using the python 'pre-commit' tool, you can install this at
+# '.git/hooks/pre-push.legacy' (or install it to '.git/hooks/pre-push' before
+# installing the pre-commit tool's hooks), and it will run before the pre-commit
+# managed hooks; this is necessary, because pre-commit doesn't permit using
+# stdin, so the user-interactive mode of the script doesn't work 😢
+#
+# Below comment is from the .git/hooks/pre-push.sample file, for reference.
+
+# -----------------------------------------------------------------------------
+
+# An example hook script to verify what is about to be pushed.  Called by "git
+# push" after it has checked the remote status, but before anything has been
+# pushed.  If this script exits with a non-zero status nothing will be pushed.
+#
+# This hook is called with the following parameters:
+#
+# $1 -- Name of the remote to which the push is being done
+# $2 -- URL to which the push is being done
+#
+# If pushing without using a named remote those arguments will be equal.
+#
+# Information about the commits which are being pushed is supplied as lines to
+# the standard input in the form:
+#
+#   <local ref> <local oid> <remote ref> <remote oid>
+
+remote="$1"
+url="$2"
+
+zero=$(git hash-object --stdin </dev/null | tr '[0-9a-f]' '0')
+
+while read local_ref local_oid remote_ref remote_oid; do
+	if test "$local_oid" = "$zero"; then
+		# Handle delete
+		:
+	else
+		if test "$remote_oid" = "$zero"; then
+			# New branch, examine all commits
+			range="$local_oid"
+		else
+			# if it's an update, we can exit right away, presumably the ticket
+			# id has already been verified
+			exit 0
+
+			# Update to existing branch, examine new commits
+			range="$remote_oid..$local_oid"
+		fi
+
+		ticket=$(git --no-pager log --pretty="%s" --extended-regexp --grep '^[A-Za-z]+-[0-9]+' -n 1 "$range" | grep -E --only-matching '^[A-Za-z]+-[0-9]+')
+		if test -n "$ticket"; then
+			echo "Pre-push: checking $ticket in youtrack before continuing push..."
+			youtrack-cli get --confirm-prompt --ticket "$ticket" </dev/tty
+			if test $? -ne 0; then
+				echo "Pre-push: youtrack ticket check failed, aborting push"
+				exit 1
+			fi
+		fi
+	fi
+done
+
+exit 0

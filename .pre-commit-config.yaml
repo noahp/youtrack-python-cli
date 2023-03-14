@@ -3,11 +3,6 @@
 
 default_install_hook_types:
   - pre-commit
-  - prepare-commit-msg
-  - post-checkout
-  - post-commit
-  - post-merge
-  - post-rewrite
   # - pre-push
 
 default_stages:
@@ -48,6 +43,7 @@ repos:
 
       - id: requirements-txt-fixer # sorts entries in requirements.txt.
       - id: trailing-whitespace # trims trailing whitespace.
+        exclude: \.ambr$
 
   - repo: https://github.com/psf/black
     rev: 23.1.0
@@ -105,6 +101,10 @@ repos:
         entry: pylint
         language: system
         types: [python]
+        exclude: |
+          (?x)^(
+              ^tests/.*
+          )$
 
       - id: mypy
         name: mypy

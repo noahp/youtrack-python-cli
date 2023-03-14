@@ -3,10 +3,10 @@ CLI interface.
 """
 
 import dataclasses
+import http
 import json
 import logging
 import re
-from http import HTTPStatus
 
 import click
 from rich import print_json
@@ -138,9 +138,10 @@ def get(ctx: CliCtx, ticket, confirm_prompt):
     )
 
     # check for response error
-    if ticket_response.status_code != HTTPStatus.OK:
-        raise RuntimeError(
-            f"unexpected status code: {ticket_response.status_code}"
+    if ticket_response.status_code != http.HTTPStatus.OK:
+        raise click.UsageError(
+            "unexpected HTTP status code, check your youtrack token:"
+            f" {ticket_response.status_code}"
         )
 
     # parse json

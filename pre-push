@@ -55,6 +55,10 @@ while read local_ref local_oid remote_ref remote_oid; do
 		if test -n "$ticket"; then
 			echo "Pre-push: checking $ticket in youtrack before continuing push..."
 			youtrack-cli get --confirm-prompt --ticket "$ticket" </dev/tty
+			if test $? -ne 0; then
+				echo "Pre-push: youtrack ticket check failed, aborting push"
+				exit 1
+			fi
 		fi
 	fi
 done

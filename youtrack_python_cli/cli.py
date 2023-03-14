@@ -44,7 +44,10 @@ class Issue(dict):
             )
         )
         # truncate description to 1024 chars
-        if len(filtered_dict["description"]) > 1024:
+        if (
+            filtered_dict.get("description")
+            and len(filtered_dict["description"]) > 1024
+        ):
             filtered_dict["description"] = (
                 filtered_dict["description"][:1024] + "..."
             )

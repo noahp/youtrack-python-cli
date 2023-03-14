@@ -105,11 +105,18 @@ repos:
         entry: pylint
         language: system
         types: [python]
-        exclude: |
-          (?x)^(
-              ^tests/.*|
-              ^dtrx/dtrx.py
-          )$
+
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+
+      - id: ruff
+        name: ruff
+        entry: ruff
+        language: system
+        types: [python]
 
       # # in theory, but pre-commit eats output/stdin, so RIP
       # - id: youtrack-id-check

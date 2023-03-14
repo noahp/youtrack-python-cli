@@ -6,22 +6,31 @@ authors = []
 readme = "README.md"
 packages = [{ include = "youtrack_python_cli" }]
 
-
 [tool.poetry.scripts]
 youtrack-cli = 'youtrack_python_cli.cli:cli'
 
-
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.7"
 click = "^8.1.3"
 youtrack-python-openapi = "^2023.1"
 rich = "^13.3.2"
 
-
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
-isort = "^5.12.0"
+isort = "^5"
+mypy = "^1.1.1"
+ruff = "^0.0.255"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+target-version = ['py311']
+include = '\.pyi?$'
+experimental-string-processing = true
+
+[tool.isort]
+# https://pycqa.github.io/isort/docs/configuration/profiles/
+profile = 'black'

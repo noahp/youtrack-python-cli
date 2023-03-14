@@ -1,0 +1,8 @@
+build
+/.tox/
+/.eggs/
+/*.egg-info/
+/dist/
+/dtrx.1
+__pycache__
+*.pyc

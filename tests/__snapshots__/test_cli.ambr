@@ -24,10 +24,12 @@
   
   Options:
     --verbose     Log verbosely
-    --url TEXT    Explicit youtrack url, defaults to environment variable
-                  YOUTRACK_URL
-    --token TEXT  Explicit youtrack token, defaults to environment variable
-                  YOUTRACK_TOKEN
+    --url TEXT    Explicit youtrack url. Can be configured here, or via
+                  environment variable YOUTRACK_URL, or via 'git config
+                  youtrack.url'.
+    --token TEXT  Explicit youtrack token. Can be configured here, or via
+                  environment variable YOUTRACK_TOKEN, or via 'git config
+                  youtrack.token'.
     --version     Show the version and exit.
     --help        Show this message and exit.
   

@@ -6,7 +6,10 @@ import dataclasses
 import http
 import json
 import logging
+import os
 import re
+import subprocess
+from typing import Tuple
 
 import click
 from rich import print_json
@@ -78,21 +81,57 @@ class CliCtx:
     verbose: bool
 
 
+def get_config(key: str) -> str:
+    """
+    Get a config value from git config, or environment variables.
+    """
+    config = None
+
+    # try git config
+    try:
+        config = (
+            subprocess.check_output(["git", "config", f"youtrack.{key}"])
+            .decode("utf-8")
+            .strip()
+        )
+    except subprocess.CalledProcessError:
+        pass
+
+    # try environment variable- overrides git config
+    env_var = f"YOUTRACK_{key.upper()}"
+    if env_var in os.environ:
+        config = os.environ[env_var]
+
+    if not config:
+        raise click.UsageError(
+            f"missing config value for '{key}', please set via environment"
+            f" variable '{env_var}', or via 'git config youtrack.{key}'"
+        )
+
+    return config
+
+
+def load_config(url: str, token: str) -> Tuple[str, str]:
+    """
+    Load configs.
+    """
+    return url or get_config("url"), token or get_config("token")
+
+
 @click.group()
 @click.option("--verbose", help="Log verbosely", is_flag=True)
 @click.option(
     "--url",
-    envvar="YOUTRACK_URL",
     help=(
-        "Explicit youtrack url, defaults to environment variable YOUTRACK_URL"
+        "Explicit youtrack url. Can be configured here, or via environment"
+        " variable YOUTRACK_URL, or via 'git config youtrack.url'."
     ),
 )
 @click.option(
     "--token",
-    envvar="YOUTRACK_TOKEN",
     help=(
-        "Explicit youtrack token, defaults to environment variable"
-        " YOUTRACK_TOKEN"
+        "Explicit youtrack token. Can be configured here, or via environment"
+        " variable YOUTRACK_TOKEN, or via 'git config youtrack.token'."
     ),
 )
 @click.version_option(version=VERSION)
@@ -106,8 +145,7 @@ def cli(ctx, verbose, url, token):
 
         logging.basicConfig(level=logging.DEBUG)
 
-    if not url:
-        raise click.BadParameter("url is required")
+    url, token = load_config(url, token)
 
     ctx.obj = CliCtx(
         url, AuthenticatedClient(base_url=url, token=token), verbose

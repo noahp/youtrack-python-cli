@@ -1,0 +1,43 @@
+name: main-ci
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    # TODO might be simpler to matrix this out on base executor, like this
+    # example:
+    # https://github.com/codecov/python-standard/blob/master/.github/workflows/python-standard.yml
+    container:
+      image: noahpendleton/youtrack-python-cli:2023-03-15
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Tox
+        run: tox
+
+  coverage:
+    runs-on: ubuntu-latest
+    container:
+      image: noahpendleton/youtrack-python-cli:2023-03-15
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate and upload coverage
+        run: |
+          pip install codecov==2.1.12
+          tox -e coverage
+          codecov

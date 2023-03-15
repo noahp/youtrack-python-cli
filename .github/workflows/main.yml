@@ -11,33 +11,42 @@ on:
 
 jobs:
   ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
     runs-on: ubuntu-latest
-    # TODO might be simpler to matrix this out on base executor, like this
-    # example:
-    # https://github.com/codecov/python-standard/blob/master/.github/workflows/python-standard.yml
-    container:
-      image: noahpendleton/youtrack-python-cli:2023-03-15
-    env:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Run Tox
-        run: tox
+        run: |
+          pip install tox==4.4.7
+          tox -e py${{ matrix.python-version }}
 
   coverage:
     runs-on: ubuntu-latest
-    container:
-      image: noahpendleton/youtrack-python-cli:2023-03-15
-    env:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Generate and upload coverage
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Generate coverage
         run: |
-          pip install codecov==2.1.12
+          pip install tox==4.4.7
           tox -e coverage
-          codecov
+
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3
+        with:
+          # note: this is required for public repos, see here:
+          # https://community.codecov.com/t/upload-issues-unable-to-locate-build-via-github-actions-api/3954
+          token: ${{ secrets.CODECOV_TOKEN }}

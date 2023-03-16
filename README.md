@@ -8,7 +8,39 @@ pyversions](https://img.shields.io/pypi/pyversions/youtrack-python-cli.svg?style
 
 # YouTrack Python CLI
 
-Usage:
+## Installation
+
+```bash
+❯ pip install youtrack-python-cli
+# OR, if you use virtualenvs or conda envs in your working repo, use pipx:
+❯ pipx install youtrack-python-cli
+```
+
+## Configuration
+
+The script needs a YouTrack URL to target API requests, and a token for auth.
+
+3 configuration methods:
+
+1. set into current repo's git config:
+
+   ```bash
+   ❯ git config youtrack.token "$YOUTRACK_TOKEN"
+   ❯ git config youtrack.url https://your-youtrack-server/api
+   ```
+
+2. set via environment variables, `YOUTRACK_URL` and `YOUTRACK_TOKEN`
+3. set via command line parameters, `--url` and `--token`
+
+## Usage
+
+### As git pre-push hook
+
+See the [`pre-push`](pre-push) example, which can be copied directly into
+`.git/hooks/pre-push`. That example checks the commit title for the YouTrack
+ticket ID as the first item, for example `EXAMPLE-1234 some commit title`.
+
+### Running standalone
 
 ```bash
 ❯ youtrack-cli --url "https://your-youtrack-server/api" --token $YOUTRACK_TOKEN get --confirm-prompt --ticket example-1234
@@ -30,7 +62,3 @@ Usage:
 └───────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 Type the ticket id to confirm: example-1234
 ```
-
-See also [pre-push](pre-push) for a `.git/hooks/pre-push` example script that
-will prompt when you try to push new commits with a leading `^[A-Za-z]+-[0-9]+`
-string.

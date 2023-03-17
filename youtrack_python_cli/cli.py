@@ -212,7 +212,3 @@ def get(ctx: CliCtx, ticket, confirm_prompt):
             != ticket.lower()
         ):
             print("Ticket id did not match, try again!")
-
-
-if __name__ == "__main__":
-    cli()  # pylint: disable=no-value-for-parameter

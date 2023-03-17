@@ -62,3 +62,29 @@ ticket ID as the first item, for example `EXAMPLE-1234 some commit title`.
 └───────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 Type the ticket id to confirm: example-1234
 ```
+
+## Development
+
+### Releasing
+
+Manual. Steps are:
+
+```bash
+# 1. bump version, eg just the patch:
+❯ poetry version patch
+Bumping version from 0.1.1 to 0.1.2
+# 2. store version for remaining commands
+❯ _VER=$(poetry version --short)
+# 3. Save version bump
+❯ git commit -m "Bump version to ${_VER}"
+# 4. Create annotated tag
+❯ git tag -a {-m=,}${_VER}
+# 5. Push
+❯ git push && git push --tags
+# 6. Build pypi release artifacts
+❯ rm -rf build && poetry build
+# 7. Publish
+❯ poetry publish --username=__token__ --password=$(<~/.noahp-pypi-pw)
+# 8. Github release stuff
+❯ gh release create --generate-notes ${_VER}
+```

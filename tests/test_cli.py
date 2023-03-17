@@ -95,6 +95,9 @@ def test_basic_operation(
     result = runner.invoke(
         cli,
         cli_args,
+        # enable CI explicity, though it's normally set in tox. this is in case
+        # the user is running pytest manually.
+        env={"CI": "1"},
     )
     print(result.output)
     assert result.exit_code == retval
@@ -186,3 +189,20 @@ def test_confirm_prompt(snapshot, respx_mock):
     )
     assert result.exit_code == 0
     assert result.output == snapshot
+
+
+def test_no_ci_run(respx_mock):
+    respx_mock.get(BASIC_REQUEST_MOCK_URL).respond(
+        status_code=200,
+        json=BASIC_RESPONSE_JSON,
+    )
+
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        BASIC_GET_ARGS,
+        env={"CI": ""},
+    )
+    assert result.exit_code == 0
+    # don't care about the output.

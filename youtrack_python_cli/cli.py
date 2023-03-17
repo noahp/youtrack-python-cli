@@ -68,7 +68,7 @@ class Issue(dict):
 
         # force rich to display fixed width when CI environment variable is set
         # the other approaches (TERM=dumb etc) were not working in the tests.
-        if bool(os.environ.get("CI")):
+        if os.environ.get("CI"):
             console = Console(width=80, height=50)
         else:
             console = Console()

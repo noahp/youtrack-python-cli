@@ -88,3 +88,16 @@ Bumping version from 0.1.1 to 0.1.2
 # 8. Github release stuff
 ❯ gh release create --generate-notes ${_VER}
 ```
+
+And all-in-one for copy paste:
+
+```bash
+poetry version patch \
+  && _VER=$(poetry version --short) \
+  && git commit -m "Bump version to ${_VER}" \
+  && git tag -a {-m=,}${_VER} \
+  && git push && git push --tags \
+  && rm -rf build && poetry build \
+  && poetry publish --username=__token__ --password=$(<~/.noahp-pypi-pw) \
+  && gh release create --generate-notes ${_VER}
+```

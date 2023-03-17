@@ -76,7 +76,7 @@ Bumping version from 0.1.1 to 0.1.2
 # 2. store version for remaining commands
 ❯ _VER=$(poetry version --short)
 # 3. Save version bump
-❯ git commit -m "Bump version to ${_VER}"
+❯ git add . && git commit -m "Bump version to ${_VER}"
 # 4. Create annotated tag
 ❯ git tag -a {-m=,}${_VER}
 # 5. Push
@@ -94,6 +94,7 @@ And all-in-one for copy paste:
 ```bash
 poetry version patch \
   && _VER=$(poetry version --short) \
+  && git add . \
   && git commit -m "Bump version to ${_VER}" \
   && git tag -a {-m=,}${_VER} \
   && git push && git push --tags \

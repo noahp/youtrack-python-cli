@@ -51,7 +51,9 @@ while read local_ref local_oid remote_ref remote_oid; do
 			range="$remote_oid..$local_oid"
 		fi
 
-		ticket=$(git --no-pager log --pretty="%s" --extended-regexp --grep '^[A-Za-z]+-[0-9]+' -n 1 "$range" | grep -E --only-matching '^[A-Za-z]+-[0-9]+')
+		echo "Checking $range"
+
+		ticket=$(git --no-pager log --pretty="%s" --extended-regexp -n 1 "$range" | grep -E --only-matching '^[A-Za-z]+-[0-9]+')
 		if test -n "$ticket"; then
 			echo "Pre-push: checking $ticket in youtrack before continuing push..."
 			youtrack-cli get --confirm-prompt --ticket "$ticket" </dev/tty

@@ -26,7 +26,8 @@ jobs:
       - name: Run Tox
         run: |
           pip install tox==4.4.7
-          tox -e py${{ matrix.python-version }}
+          # make pytest pass output to the console
+          tox -e py${{ matrix.python-version }} -- --capture=no
 
   coverage:
     runs-on: ubuntu-latest

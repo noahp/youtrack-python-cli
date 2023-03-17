@@ -61,12 +61,17 @@ class Issue(dict):
         table = Table(title=f"Issue data for {self.ticket}")
 
         table.add_column("Key", justify="right", style="cyan", no_wrap=True)
-        table.add_column("Value", style="magenta")
+        table.add_column("Value", style="magenta", overflow="fold")
         for key, value in self.items():
             table.add_row(key, value)
             table.add_section()
 
-        console = Console()
+        # force rich to display fixed width when CI environment variable is set
+        # the other approaches (TERM=dumb etc) were not working in the tests.
+        if bool(os.environ.get("CI")):
+            console = Console(width=80, height=50)
+        else:
+            console = Console()
         console.print(table)
 
 

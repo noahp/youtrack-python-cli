@@ -205,7 +205,7 @@ def get(ctx: CliCtx, ticket, confirm_prompt):
     issue_json["reporter_name"] = issue_json["reporter"]["login"]
     # 3. assignee name, if present
     for field in issue_json["customFields"]:
-        if field["name"] == "Assignee":
+        if field["name"] == "Assignee" and field["value"]:
             issue_json["assignee_name"] = field["value"]["name"]
 
     issue = Issue(ticket, issue_json)

@@ -45,6 +45,17 @@ BASIC_RESPONSE_JSON = {
     ],
     "description": "Test Description",
 }
+BASIC_RESPONSE_JSON_NO_ASSIGNEE = {
+    "idReadable": "TEST-1234",
+    "reporter": {"login": "testuser"},
+    "customFields": [
+        {
+            "name": "Assignee",
+            "value": None,
+        },
+    ],
+    "description": "Test Description",
+}
 LONG_DESCRIPTION_JSON = BASIC_RESPONSE_JSON.copy()
 LONG_DESCRIPTION_JSON["description"] = "a" * 1025
 BASIC_CLI_ARGS = [
@@ -81,6 +92,8 @@ BASIC_REQUEST_MOCK_URL = r"http://youtrack-test/youtrack/api/issues/TEST-1234?fi
             200,
         ),
         (BASIC_RESPONSE_JSON, BASIC_GET_ARGS, 2, 401),
+        # test that when there's no assignee, we don't crash
+        (BASIC_RESPONSE_JSON_NO_ASSIGNEE, BASIC_GET_ARGS, 0, 200),
     ],
 )
 def test_basic_operation(

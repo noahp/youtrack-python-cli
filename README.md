@@ -67,7 +67,7 @@ Type the ticket id to confirm: example-1234
 
 ### Releasing
 
-Manual. Steps are:
+Manual (TODO this should happen via tag push automatically!). Steps are:
 
 ```bash
 # 1. bump version, eg just the patch:
@@ -82,11 +82,12 @@ Bumping version from 0.1.1 to 0.1.2
 # 5. Push
 ❯ git push && git push --tags
 # 6. Build pypi release artifacts
-❯ rm -rf build && poetry build
+❯ rm -rf dist && poetry build
 # 7. Publish
 ❯ poetry publish --username=__token__ --password=$(<~/.noahp-pypi-pw)
 # 8. Github release stuff
 ❯ gh release create --generate-notes ${_VER}
+❯ gh release upload ${_VER} dist/*
 ```
 
 And all-in-one for copy paste:
@@ -98,7 +99,8 @@ poetry version patch \
   && git commit -m "Bump version to ${_VER}" \
   && git tag -a {-m=,}${_VER} \
   && git push && git push --tags \
-  && rm -rf build && poetry build \
+  && rm -rf dist && poetry build \
   && poetry publish --username=__token__ --password=$(<~/.noahp-pypi-pw) \
-  && gh release create --generate-notes ${_VER}
+  && gh release create --generate-notes ${_VER} \
+  && gh release upload ${_VER} dist/*
 ```

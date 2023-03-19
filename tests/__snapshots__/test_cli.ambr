@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_basic_operation[None-cli_args3-2-200]
+# name: test_basic_operation[None-cli_args2-2-200]
   '''
   Usage: cli get [OPTIONS]
   Try 'cli get --help' for help.
@@ -28,47 +28,6 @@
   '''
 # ---
 # name: test_basic_operation[json_response1-cli_args1-0-200]
-  '''
-  version: 0.1.2
-  {
-    "idReadable": "TEST-1234",
-    "reporter": {
-      "login": "testuser"
-    },
-    "customFields": [
-      {
-        "name": "Assignee",
-        "value": {
-          "name": "testuser name"
-        }
-      },
-      {
-        "name": "NotAssignee",
-        "value": {
-          "name": "testuser not name"
-        }
-      }
-    ],
-    "description": "Test Description"
-  }
-                      Issue data for TEST-1234                     
-  ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-  ┃           Key ┃ Value                                         ┃
-  ┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-  │    idReadable │ TEST-1234                                     │
-  ├───────────────┼───────────────────────────────────────────────┤
-  │ assignee_name │ testuser name                                 │
-  ├───────────────┼───────────────────────────────────────────────┤
-  │ reporter_name │ testuser                                      │
-  ├───────────────┼───────────────────────────────────────────────┤
-  │   description │ Test Description                              │
-  ├───────────────┼───────────────────────────────────────────────┤
-  │           url │ http://youtrack-test/youtrack/issue/TEST-1234 │
-  └───────────────┴───────────────────────────────────────────────┘
-  
-  '''
-# ---
-# name: test_basic_operation[json_response2-cli_args2-0-200]
   '''
                               Issue data for TEST-1234                            
   ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -104,7 +63,7 @@
   
   '''
 # ---
-# name: test_basic_operation[json_response4-cli_args4-2-401]
+# name: test_basic_operation[json_response3-cli_args3-2-401]
   '''
   Usage: cli get [OPTIONS]
   Try 'cli get --help' for help.
@@ -113,7 +72,7 @@
   
   '''
 # ---
-# name: test_basic_operation[json_response5-cli_args5-0-200]
+# name: test_basic_operation[json_response4-cli_args4-0-200]
   '''
                       Issue data for TEST-1234                     
   ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -218,6 +177,47 @@
   Try 'cli --help' for help.
   
   Error: missing config value for 'url', please set via environment variable 'YOUTRACK_URL', or via 'git config youtrack.url'
+  
+  '''
+# ---
+# name: test_verbose_output
+  '''
+  
+  {
+    "idReadable": "TEST-1234",
+    "reporter": {
+      "login": "testuser"
+    },
+    "customFields": [
+      {
+        "name": "Assignee",
+        "value": {
+          "name": "testuser name"
+        }
+      },
+      {
+        "name": "NotAssignee",
+        "value": {
+          "name": "testuser not name"
+        }
+      }
+    ],
+    "description": "Test Description"
+  }
+                      Issue data for TEST-1234                     
+  ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+  ┃           Key ┃ Value                                         ┃
+  ┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+  │    idReadable │ TEST-1234                                     │
+  ├───────────────┼───────────────────────────────────────────────┤
+  │ assignee_name │ testuser name                                 │
+  ├───────────────┼───────────────────────────────────────────────┤
+  │ reporter_name │ testuser                                      │
+  ├───────────────┼───────────────────────────────────────────────┤
+  │   description │ Test Description                              │
+  ├───────────────┼───────────────────────────────────────────────┤
+  │           url │ http://youtrack-test/youtrack/issue/TEST-1234 │
+  └───────────────┴───────────────────────────────────────────────┘
   
   '''
 # ---

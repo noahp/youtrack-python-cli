@@ -1,3 +1,4 @@
+import re
 import subprocess
 
 import pytest
@@ -78,12 +79,6 @@ BASIC_REQUEST_MOCK_URL = r"http://youtrack-test/youtrack/api/issues/TEST-1234?fi
         # use explicit http status codes, snapshots vary depending on python
         # version unfortunately
         (BASIC_RESPONSE_JSON, BASIC_GET_ARGS, 0, 200),
-        (
-            BASIC_RESPONSE_JSON,
-            ["--verbose"] + BASIC_GET_ARGS,
-            0,
-            200,
-        ),
         (LONG_DESCRIPTION_JSON, BASIC_GET_ARGS, 0, 200),
         (
             None,
@@ -219,3 +214,23 @@ def test_no_ci_run(respx_mock):
     )
     assert result.exit_code == 0
     # don't care about the output.
+
+
+def test_verbose_output(snapshot, respx_mock):
+    respx_mock.get(BASIC_REQUEST_MOCK_URL).respond(
+        status_code=200,
+        json=BASIC_RESPONSE_JSON,
+    )
+
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        ["--verbose"] + BASIC_GET_ARGS,
+    )
+    assert result.exit_code == 0
+
+    _, ver_output, output = re.split(
+        r"^(version: \d+\.\d+\.\d+)", result.output, maxsplit=1
+    )
+    assert output == snapshot

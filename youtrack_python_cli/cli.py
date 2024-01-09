@@ -169,8 +169,14 @@ def cli(ctx, verbose, url, token):
     ),
     is_flag=True,
 )
+@click.option(
+    "--open-url",
+    help="Open the ticket in a browser",
+    is_flag=True,
+    default=False,
+)
 @click.pass_obj
-def get(ctx: CliCtx, ticket, confirm_prompt):
+def get(ctx: CliCtx, ticket, confirm_prompt, open_url):
     """
     Fetch a ticket by id. Optionally prompt the user to confirm the ticket id,
     useful for git pre-push hooks.
@@ -198,9 +204,10 @@ def get(ctx: CliCtx, ticket, confirm_prompt):
 
     # inject some additional fields that the Issue() class uses
     # 1. ticket URL
-    issue_json[
-        "url"
-    ] = f"{ctx.url.partition('/api')[0]}/issue/{issue_json['idReadable']}"
+    ticket_url = (
+        f"{ctx.url.partition('/api')[0]}/issue/{issue_json['idReadable']}"
+    )
+    issue_json["url"] = ticket_url
     # 2. reporter name
     issue_json["reporter_name"] = issue_json["reporter"]["login"]
     # 3. assignee name, if present
@@ -217,3 +224,6 @@ def get(ctx: CliCtx, ticket, confirm_prompt):
             != ticket.lower()
         ):
             print("Ticket id did not match, try again!")
+
+    if open_url:
+        click.launch(ticket_url)
